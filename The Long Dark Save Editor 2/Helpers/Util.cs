@@ -1,112 +1,87 @@
-﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-using The_Long_Dark_Save_Editor_2.Game_data;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace The_Long_Dark_Save_Editor_2.Helpers
 {
-
-    public class SlotDataDisplayNameProxy
-    {
-        public string m_DisplayName { get; set; }
-    }
-
     public static class Util
     {
-        private static readonly object IsDebug;
-
-        public static T DeserializeObject<T>(string json) where T : class
+        public static string GetLocalPath(bool testBranch = false)
         {
-
-            if (json == null)
-                return null;
-
-            return JsonConvert.DeserializeObject<T>(json);
-        }
-
-        public static T DeserializeObjectOrDefault<T>(string json) where T : class, new()
-        {
-            if (json == null)
-                return new T();
-            return JsonConvert.DeserializeObject<T>(json);
-        }
-
-        public static string SerializeObject(object o)
-        {
-            if (o == null)
-                return null;
-            return JsonConvert.SerializeObject(o);
-        }
-
-        public static ObservableCollection<EnumerationMember> GetSaveFiles(string folder)
-        {
-
-            Regex reg = new Regex("^(ep[0-9])?(sandbox|challenge|story|relentless)[0-9]+$");
-            var saves = new List<string>();
-            if (Directory.Exists(folder))
-                saves.AddRange((from f in Directory.GetFiles(folder) orderby new FileInfo(f).LastWriteTime descending where reg.IsMatch(Path.GetFileName(f)) select f).ToList<string>());
-
-            var result = new ObservableCollection<EnumerationMember>();
-            foreach (string saveFile in saves)
-            {
-                try
-                {
-                    var member = CreateSaveEnumerationMember(saveFile, Path.GetFileName(saveFile));
-                    result.Add(member);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.ToString());
-                    continue;
-                }
-            }
-
-            return result;
-        }
-
-        private static EnumerationMember CreateSaveEnumerationMember(string file, string name)
-        {
-            var member = new EnumerationMember();
-            member.Value = file;
-
-            var slotJson = EncryptString.Decompress(File.ReadAllBytes(file));
-            var slotData = JsonConvert.DeserializeObject<SlotDataDisplayNameProxy>(slotJson);
-
-            member.Description = slotData.m_DisplayName + " (" + name + ")";
-
-            return member;
-        }
-
-        public static string GetLocalPath()
-        {
-            Guid localLowId = new Guid("A520A1A4-1780-4FF6-BD18-167343C5AF16");
-            return GetKnownFolderPath(localLowId).Replace("LocalLow", "Local");
-        }
-
-        private static string GetKnownFolderPath(Guid knownFolderId)
-        {
-            IntPtr pszPath = IntPtr.Zero;
             try
             {
-                int hr = SHGetKnownFolderPath(knownFolderId, 0, IntPtr.Zero, out pszPath);
-                if (hr >= 0)
-                    return Marshal.PtrToStringAuto(pszPath);
-                throw Marshal.GetExceptionForHR(hr);
+                string local;
+                string path;
+                
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                {
+                    local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                }
+                else
+                {
+                    local = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config/unity3d");
+                }
+                
+                // Support for both the original install path and Steam path
+                path = Path.Combine(local, testBranch ? "HinterlandTest2" : "Hinterland");
+                
+                return path;
             }
-            finally
+            catch (Exception)
             {
-                if (pszPath != IntPtr.Zero)
-                    Marshal.FreeCoTaskMem(pszPath);
+                return ".";
             }
         }
 
-        [DllImport("shell32.dll")]
-        private static extern int SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid rfid, uint dwFlags, IntPtr hToken, out IntPtr pszPath);
+        public static bool IsTFTFTSave(string savePath)
+        {
+            // Check if the save path contains the Survival subfolder (TFTFT saves)
+            return savePath.Contains(Path.Combine("TheLongDark", "Survival"));
+        }
+
+        public static string GetSaveProfilePath(string savePath)
+        {
+            // Determine the profile path based on the save path
+            string directory = Path.GetDirectoryName(savePath);
+            
+            if (IsTFTFTSave(savePath))
+            {
+                // For TFTFT, check for profile files in the Survival folder
+                var profiles = Directory.GetFiles(directory, "profile_survival*");
+                if (profiles.Length > 0)
+                {
+                    // Return the most recent profile
+                    return profiles.OrderByDescending(p => File.GetLastWriteTime(p)).First();
+                }
+                return null;
+            }
+            else
+            {
+                // For pre-TFTFT saves, check in the root TheLongDark folder
+                string rootDir = Directory.GetParent(directory).FullName;
+                var profiles = Directory.GetFiles(rootDir, "user*");
+                if (profiles.Length > 0)
+                {
+                    // Return the most recent profile
+                    return profiles.OrderByDescending(p => File.GetLastWriteTime(p)).First();
+                }
+                return null;
+            }
+        }
+
+        public static string VersionString
+        {
+            get
+            {
+                Version v = Assembly.GetExecutingAssembly().GetName().Version;
+                return $"{v.Major}.{v.Minor}.{v.Build}";
+            }
+        }
+
+        // Any additional utility methods...
     }
 }

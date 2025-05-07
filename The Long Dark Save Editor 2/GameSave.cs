@@ -27,21 +27,35 @@ namespace The_Long_Dark_Save_Editor_2
         public string OriginalRegion { get; set; }
 
         public string path;
+        
+        // Flag indicating whether this is a TFTFT save
+        public bool IsTFTFTSave { get; private set; }
 
         public void LoadSave(string path)
         {
             this.path = path;
-            string slotJson = EncryptString.Decompress(File.ReadAllBytes(path));
-            dynamicSlotData = new DynamicSerializable<SlotData>(slotJson);
+            
+            // Determine if this is a TFTFT save
+            IsTFTFTSave = Util.IsTFTFTSave(path);
+            
+            try
+            {
+                string slotJson = EncryptString.Decompress(File.ReadAllBytes(path));
+                dynamicSlotData = new DynamicSerializable<SlotData>(slotJson);
 
-            var bootJson = EncryptString.Decompress(Convert.FromBase64String(SlotData.m_Dict["boot"]));
-            dynamicBoot = new DynamicSerializable<BootSaveGameFormat>(bootJson);
-            OriginalRegion = Boot.m_SceneName.Value;
+                var bootJson = EncryptString.Decompress(Convert.FromBase64String(SlotData.m_Dict["boot"]));
+                dynamicBoot = new DynamicSerializable<BootSaveGameFormat>(bootJson);
+                OriginalRegion = Boot.m_SceneName.Value;
 
-            var globalJson = EncryptString.Decompress(Convert.FromBase64String(SlotData.m_Dict["global"]));
-            dynamicGlobal = new DynamicSerializable<GlobalSaveGameFormat>(globalJson);
+                var globalJson = EncryptString.Decompress(Convert.FromBase64String(SlotData.m_Dict["global"]));
+                dynamicGlobal = new DynamicSerializable<GlobalSaveGameFormat>(globalJson);
 
-            Afflictions = new AfflictionsContainer(Global);
+                Afflictions = new AfflictionsContainer(Global);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to load save file: {ex.Message}", ex);
+            }
         }
 
         public void Save()
@@ -51,43 +65,54 @@ namespace The_Long_Dark_Save_Editor_2
             LastSaved = DateTime.Now.Ticks;
             var bootSerialized = dynamicBoot.Serialize();
             SlotData.m_Dict["boot"] = Convert.ToBase64String(EncryptString.Compress(bootSerialized));
-
-            if (Boot.m_SceneName.Value != OriginalRegion)
-            {
-                Global.GameManagerData.SceneTransition.m_ForceNextSceneLoadTriggerScene = null;
-            }
-            Global.GameManagerData.SceneTransition.m_SceneSaveFilenameCurrent = Boot.m_SceneName.Value;
-            Global.GameManagerData.SceneTransition.m_SceneSaveFilenameNextLoad = Boot.m_SceneName.Value;
-            Global.PlayerManager.m_CheatsUsed = true;
-            Afflictions.SerializeTo(Global);
-
             var globalSerialized = dynamicGlobal.Serialize();
             SlotData.m_Dict["global"] = Convert.ToBase64String(EncryptString.Compress(globalSerialized));
 
-            SlotData.m_Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-            var slotDataSerialized = dynamicSlotData.Serialize();
-            File.WriteAllBytes(this.path, EncryptString.Compress(slotDataSerialized));
+            var toBeCompressed = dynamicSlotData.Serialize();
+            File.WriteAllBytes(path, EncryptString.Compress(toBeCompressed));
         }
 
-        private void Backup()
+        public void Backup()
         {
-            var backupDirectory = Path.Combine(Path.GetDirectoryName(this.path), "backups");
-            Directory.CreateDirectory(backupDirectory);
-
-            var oldBackups = new DirectoryInfo(backupDirectory).GetFiles().OrderByDescending(x => x.LastWriteTime).Skip(MAX_BACKUPS);
-            foreach (var file in oldBackups)
+            string backupFolder = SaveGameManager.GetBackupPath(path);
+            
+            // Get existing backups
+            string[] currentBackups = Directory.GetFiles(backupFolder, "*.backup", SearchOption.TopDirectoryOnly);
+            
+            // Sort backups by creation time (oldest first)
+            var orderedBackups = currentBackups
+                .Select(f => new FileInfo(f))
+                .OrderBy(f => f.CreationTime)
+                .ToList();
+            
+            // Remove old backups if we have too many
+            while (orderedBackups.Count >= MAX_BACKUPS)
             {
-                File.Delete(file.FullName);
+                var oldestBackup = orderedBackups[0];
+                try
+                {
+                    File.Delete(oldestBackup.FullName);
+                    orderedBackups.RemoveAt(0);
+                }
+                catch
+                {
+                    // Skip if we can't delete
+                    break;
+                }
             }
+            
+            // Create new backup with timestamp
+            string backupName = $"{DateTime.Now:yyyy-MM-dd HH.mm.ss}-{Path.GetFileName(path)}.backup";
+            string backupPath = Path.Combine(backupFolder, backupName);
+            
+            File.Copy(path, backupPath, true);
+        }
 
-            var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss", CultureInfo.InvariantCulture);
-            var i = 1;
-            var backupPath = Path.Combine(backupDirectory, timestamp + "-" + Path.GetFileName(this.path) + ".backup");
-            while (File.Exists(backupPath))
-            {
-                backupPath = Path.Combine(backupDirectory, timestamp + "-" + Path.GetFileName(this.path) + "(" + i++ + ")" + ".backup");
-            }
-            File.Copy(this.path, backupPath);
+        public static GameSave LoadFromFile(string path)
+        {
+            GameSave gameSave = new GameSave();
+            gameSave.LoadSave(path);
+            return gameSave;
         }
     }
 }
