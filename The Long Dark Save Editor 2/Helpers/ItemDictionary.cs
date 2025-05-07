@@ -265,6 +265,23 @@ namespace The_Long_Dark_Save_Editor_2.Helpers
             AddItemInfo("GEAR_RevolverAmmoSingle", ItemCategory.Tools, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
             AddItemInfo("GEAR_RevolverAmmoBox", ItemCategory.Tools, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
             AddItemInfo("GEAR_Revolver", ItemCategory.Tools, @"{""WeaponItem"": {""m_RoundsInClipProxy"": 5}}");
+            // New Tools from Tales from the Far Territory and updates
+            AddItemInfo("GEAR_SpelunkersLantern", ItemCategory.Tools, @"{""KeroseneLampItem"": {""m_CurrentFuelLitersProxy"": 1}}");
+            AddItemInfo("GEAR_WoodsmansAxe", ItemCategory.Tools, @"{}");
+            AddItemInfo("GEAR_CookingSkillet", ItemCategory.Tools, @"{""CookingPot"": {}}");
+            AddItemInfo("GEAR_HuntingKnife", ItemCategory.Tools, @"{}");
+            AddItemInfo("GEAR_BowWoodsmans", ItemCategory.Tools, @"{}");
+            AddItemInfo("GEAR_RifleBarnaul", ItemCategory.Tools, @"{""WeaponItem"": {""m_RoundsInClipProxy"": 10}}");
+            AddItemInfo("GEAR_RifleVarmin", ItemCategory.Tools, @"{""WeaponItem"": {""m_RoundsInClipProxy"": 10}}");
+            AddItemInfo("GEAR_RifleCurators", ItemCategory.Tools, @"{""WeaponItem"": {""m_RoundsInClipProxy"": 10}}");
+            AddItemInfo("GEAR_FishingRod", ItemCategory.Tools, @"{}");
+            AddItemInfo("GEAR_FishingRodHandmade", ItemCategory.Tools, @"{}");
+            AddItemInfo("GEAR_JerrycanPlastic", ItemCategory.Tools, @"{""LiquidItem"": {m_LiquidLitersProxy: 2,m_LiquidQuality:{Value:""NonPotable""}}}");
+            AddItemInfo("GEAR_MarineFlare", ItemCategory.Tools, @"{""FlareItem"": {}}");
+            AddItemInfo("GEAR_Shovel", ItemCategory.Tools, @"{}");
+            AddItemInfo("GEAR_SnowShelter", ItemCategory.Tools, @"{""Bed"": {}}");
+            AddItemInfo("GEAR_IceFishingHole", ItemCategory.Tools, @"{}");
+            AddItemInfo("GEAR_MeatSock", ItemCategory.Tools, @"{}");
 
             // Materials
             AddItemInfo("GEAR_ArrowHead", ItemCategory.Materials, @"{""StackableItem"": {""m_UnitsProxy"": 1}, ""InProgressItem"": {""m_PercentComplete"": 100}}");
@@ -319,6 +336,18 @@ namespace The_Long_Dark_Save_Editor_2.Helpers
             AddItemInfo("GEAR_ScrapLead", ItemCategory.Materials, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
             AddItemInfo("GEAR_StumpRemover", ItemCategory.Materials, @"{}");
             AddItemInfo("GEAR_DustingSulfur", ItemCategory.Materials, @"{}");
+            
+            // New Materials from Tales from the Far Territory and updates
+            AddItemInfo("GEAR_BowString", ItemCategory.Materials, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
+            AddItemInfo("GEAR_BirchBark", ItemCategory.Materials, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
+            AddItemInfo("GEAR_PlantFiber", ItemCategory.Materials, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
+            AddItemInfo("GEAR_Glue", ItemCategory.Materials, @"{}");
+            AddItemInfo("GEAR_BlueprintFragment", ItemCategory.Materials, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
+            AddItemInfo("GEAR_TinderFungus", ItemCategory.Materials, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
+            AddItemInfo("GEAR_Acorn", ItemCategory.Materials, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
+            AddItemInfo("GEAR_Pinecone", ItemCategory.Materials, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
+            AddItemInfo("GEAR_BrassShell", ItemCategory.Materials, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
+            AddItemInfo("GEAR_LeatherStrips", ItemCategory.Materials, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
 
             // Books
             AddItemInfo("GEAR_BookCarcassHarvesting", ItemCategory.Books, @"{""ResearchItem"": {}}");
@@ -331,6 +360,13 @@ namespace The_Long_Dark_Save_Editor_2.Helpers
             AddItemInfo("GEAR_BookMending", ItemCategory.Books, @"{""ResearchItem"": {}}");
             AddItemInfo("GEAR_BookRevolverFirearm", ItemCategory.Books, @"{""ResearchItem"": {}}");
             AddItemInfo("GEAR_BookGunsmithing", ItemCategory.Books, @"{""ResearchItem"": {}}");
+            
+            // New Books from Tales from the Far Territory and updates
+            AddItemInfo("GEAR_BookBotany", ItemCategory.Books, @"{""ResearchItem"": {}}");
+            AddItemInfo("GEAR_BookTrapping", ItemCategory.Books, @"{""ResearchItem"": {}}");
+            AddItemInfo("GEAR_BookPioneer", ItemCategory.Books, @"{""ResearchItem"": {}}");
+            AddItemInfo("GEAR_BookGathering", ItemCategory.Books, @"{""ResearchItem"": {}}");
+            AddItemInfo("GEAR_BookSurvival", ItemCategory.Books, @"{""ResearchItem"": {}}");
 
             // Collectible
             AddItemInfo("GEAR_CanneryCodeNote", ItemCategory.Collectible, @"{}");
@@ -492,7 +528,23 @@ namespace The_Long_Dark_Save_Editor_2.Helpers
             AddItemInfo("GEAR_PostCard_TM_AndresPeak", ItemCategory.Collectible, @"{}");
             AddItemInfo("GEAR_PostCard_TM_TailSection", ItemCategory.Collectible, @"{}");
             AddItemInfo("GEAR_TechnicalBackpack", ItemCategory.Collectible, @"{}");
-
+            // New Collectibles from Tales from the Far Territory and updates
+            AddItemInfo("GEAR_PostCard_BF_CrashedPlane", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_PostCard_BF_TranquilHot", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_PostCard_BM_EntryPoint", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_PostCard_BM_MineOffice", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_PostCard_TR_GlacierTop", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_PostCard_TR_TraderPath", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_JourneyCacheNote", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_MapFragment1", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_MapFragment2", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_MapFragment3", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_MapFragment4", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_MapFragment5", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_MapFragment6", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_MapFragment7", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_MapFragment8", ItemCategory.Collectible, @"{}");
+            AddItemInfo("GEAR_MapFragment9", ItemCategory.Collectible, @"{}");
 
             // Hidden
             AddItemInfo("GEAR_AccelerantKerosene", ItemCategory.Hidden, @"{""StackableItem"": {""m_UnitsProxy"": 1}}");
